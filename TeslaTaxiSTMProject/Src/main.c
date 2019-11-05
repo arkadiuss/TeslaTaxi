@@ -96,6 +96,7 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+  //HAL_GPIO_WritePin(Gaz_GPIO_Port, Gaz_Pin, GPIO_PIN_SET);
   while (1)
   {
 
@@ -105,6 +106,7 @@ int main(void)
 	  else {
 		  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_RESET);
 	  }
+
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -206,6 +208,9 @@ static void MX_GPIO_Init(void)
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_RESET);
 
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(Gaz_GPIO_Port, Gaz_Pin, GPIO_PIN_SET);
+
   /*Configure GPIO pin : Blue_Button_Pin */
   GPIO_InitStruct.Pin = Blue_Button_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
@@ -218,6 +223,13 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : Gaz_Pin */
+  GPIO_InitStruct.Pin = Gaz_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(Gaz_GPIO_Port, &GPIO_InitStruct);
 
 }
 

@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">TeslaTaxiConnector</string>
+    <string name="search_devices">Search devices</string>
+</resources>
