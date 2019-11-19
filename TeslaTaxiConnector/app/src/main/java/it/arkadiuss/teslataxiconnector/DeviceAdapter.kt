@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
-class DeviceAdapter: RecyclerView.Adapter<DeviceAdapter.ViewHolder>() {
+class DeviceAdapter(val onClick: (BluetoothDevice) -> Unit): RecyclerView.Adapter<DeviceAdapter.ViewHolder>() {
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
     private val devices: MutableList<BluetoothDevice> = mutableListOf()
 
@@ -25,6 +25,7 @@ class DeviceAdapter: RecyclerView.Adapter<DeviceAdapter.ViewHolder>() {
         val addressTV = holder.itemView.findViewById<TextView>(R.id.address)
         nameTV.text = devices[position].name
         addressTV.text = devices[position].address;
+        holder.itemView.setOnClickListener { onClick(devices[position]) }
     }
 
     fun addDevice(device: BluetoothDevice) {
