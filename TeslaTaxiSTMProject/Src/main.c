@@ -60,9 +60,33 @@ static void MX_USART1_UART_Init(void);
 
 void drive_forward()
 {
-	  HAL_GPIO_WritePin(M1A_GPIO_Port, M1A_Pin, GPIO_PIN_SET);
-	  HAL_GPIO_WritePin(M1A_GPIO_Port, M1B_Pin, GPIO_PIN_RESET);
+	  HAL_GPIO_WritePin(M1B_GPIO_Port, M1B_Pin, GPIO_PIN_SET);
+	  HAL_GPIO_WritePin(M1A_GPIO_Port, M1A_Pin, GPIO_PIN_RESET);
+	  HAL_Delay(500);
 }
+
+void drive_backward()
+{
+	  HAL_GPIO_WritePin(M1A_GPIO_Port, M1A_Pin, GPIO_PIN_SET);
+	  HAL_GPIO_WritePin(M1B_GPIO_Port, M1B_Pin, GPIO_PIN_RESET);
+	  HAL_Delay(500);
+}
+
+void turn_left()
+{
+	  HAL_GPIO_WritePin(M2B_GPIO_Port, M2B_Pin, GPIO_PIN_SET);
+	  HAL_GPIO_WritePin(M2A_GPIO_Port, M2A_Pin, GPIO_PIN_RESET);
+	  HAL_Delay(100);
+}
+
+void turn_right()
+{
+	  HAL_GPIO_WritePin(M2A_GPIO_Port, M2A_Pin, GPIO_PIN_SET);
+	  HAL_GPIO_WritePin(M2B_GPIO_Port, M2B_Pin, GPIO_PIN_RESET);
+	  HAL_Delay(100);
+}
+
+
 
 /* USER CODE END 0 */
 
@@ -103,24 +127,31 @@ int main(void)
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   //HAL_GPIO_WritePin(Gaz_GPIO_Port, Gaz_Pin, GPIO_PIN_SET);
-  HAL_GPIO_WritePin(M1A_GPIO_Port, M1A_Pin, GPIO_PIN_RESET);
-  HAL_GPIO_WritePin(M1A_GPIO_Port, M1B_Pin, GPIO_PIN_RESET);
 
   while (1)
   {
+	  HAL_GPIO_WritePin(M1A_GPIO_Port, M1A_Pin, GPIO_PIN_RESET);
+	  HAL_GPIO_WritePin(M1B_GPIO_Port, M1B_Pin, GPIO_PIN_RESET);
+	  HAL_GPIO_WritePin(M2A_GPIO_Port, M2A_Pin, GPIO_PIN_RESET);
+	  HAL_GPIO_WritePin(M2B_GPIO_Port, M2B_Pin, GPIO_PIN_RESET);
+
 	  if (__HAL_UART_GET_FLAG(&huart1, UART_FLAG_RXNE) == SET)
 	  {
-	      uint8_t value;
-	      HAL_UART_Receive(&huart1, &value, 1, 100);
-	      switch (value) {
-	      	  case 'a': drive_forward(); break;
-	      }
-  		}
+		  uint8_t value;
+		  HAL_UART_Receive(&huart1, &value, 1, 100);
+		  switch (value) {
+		  case 'f': drive_forward(); break;
+		  case 'b': drive_backward(); break;
+		  case 'l': turn_left(); break;
+		  case 'r': turn_right(); break;
+
+		  }
+	  }
 
 	  if(HAL_GPIO_ReadPin(Blue_Button_GPIO_Port, Blue_Button_Pin) == GPIO_PIN_RESET){
 		  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_SET);
-		  HAL_GPIO_WritePin(M1A_GPIO_Port, M1A_Pin, GPIO_PIN_SET);
-		  HAL_GPIO_WritePin(M1A_GPIO_Port, M1B_Pin, GPIO_PIN_RESET);
+		  drive_forward();
+		  HAL_Delay(500);
 	  }
 //	  else {
 //		  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_RESET);

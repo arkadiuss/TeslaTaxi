@@ -35,7 +35,7 @@ class ControlActivity : AppCompatActivity() {
         }
 
         forwardBtn.setOnClickListener {
-            CarConnectorService.sendTx('a')
+            CarConnectorService.sendTx('f')
         }
 
         rightBtn.setOnClickListener {
