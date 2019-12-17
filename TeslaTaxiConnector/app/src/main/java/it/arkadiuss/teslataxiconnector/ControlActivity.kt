@@ -2,6 +2,8 @@ package it.arkadiuss.teslataxiconnector
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.MotionEvent
+import android.view.View
 import android.widget.Button
 import android.widget.TextView
 
@@ -34,8 +36,13 @@ class ControlActivity : AppCompatActivity() {
             connectionText.text = CarConnectorService.connected.toString()
         }
 
-        forwardBtn.setOnClickListener {
-            CarConnectorService.sendTx('f')
+        forwardBtn.setOnTouchListener { v: View,
+                                        m: MotionEvent ->
+            when (m.actionMasked) {
+                MotionEvent.ACTION_DOWN -> CarConnectorService.sendTx('f')
+                MotionEvent.ACTION_UP -> CarConnectorService.sendTx('s')
+            }
+            true
         }
 
         rightBtn.setOnClickListener {
@@ -46,8 +53,13 @@ class ControlActivity : AppCompatActivity() {
             CarConnectorService.sendTx('l')
         }
 
-        backwardBtn.setOnClickListener {
-            CarConnectorService.sendTx('b')
+        backwardBtn.setOnTouchListener { v: View,
+                                         m: MotionEvent ->
+            when (m.actionMasked) {
+                MotionEvent.ACTION_DOWN -> CarConnectorService.sendTx('b')
+                MotionEvent.ACTION_UP -> CarConnectorService.sendTx('s')
+            }
+            true
         }
     }
 }

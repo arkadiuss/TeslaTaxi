@@ -41,15 +41,20 @@ void setup() {
   Serial.println("### Tesla Taxi ###");
 }
 
+bool goFront = false;
+bool goBack = false;
+bool goLeft = false;
+bool goRight = false;
+
 void move(char c) {
   switch(c) {
       case 'f':
-        digitalWrite(EC_M1A, HIGH);
-        digitalWrite(EC_M1B, LOW);
+        digitalWrite(EC_M1A, LOW);
+        analogWrite(EC_M1B, 150); // 0 - 255
         break;
       case 'b':
-        digitalWrite(EC_M1A, LOW);
-        digitalWrite(EC_M1B, HIGH);
+        digitalWrite(EC_M1A, HIGH);
+        analogWrite(EC_M1B, 105);
         break;
       case 'l':
         digitalWrite(EC_M2A, HIGH);
@@ -84,14 +89,28 @@ int distance() {
 
 void loop() {
 //  uncomment to test car movement over bt
-//  if(btSerial.available()) { 
-//    char c = btSerial.read();
-//    Serial.println(c);
-//    move(c);
-//    delay(300);
-//    stop();
-//  }
+  if(btSerial.available()) { 
+    char c = btSerial.read();
+    Serial.println(c);
+    switch (c) {
+      case 'f': goFront = true; goBack = false; break;
+      case 'b': goBack = true; goFront = false; break;
+      case 'l': goLeft = true; goRight = false; break;
+      case 'r': goRight = true; goLeft = false; break;
+      case 's': goFront = goBack = goLeft = goRight = false; stop(); break;
+    }
+  } else {
+    goFront = goLeft = goRight = goBack = false;
+  }
 
+  if (goFront) move('f');
+  if (goBack) move('b');
+  if (goLeft) move('l');
+  if (goRight) move('r');
+  delay(100);
+  digitalWrite(EC_M2A, LOW);
+  digitalWrite(EC_M2B, LOW);
+  goRight = goLeft = false;
 //  uncomment to test distance
 //    Serial.println(distance());
 //    delay(500);
