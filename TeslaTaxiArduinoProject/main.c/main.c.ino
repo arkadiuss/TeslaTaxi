@@ -1,29 +1,26 @@
 #include <SoftwareSerial.h>
 
 //EC - engine connector
-#define EC_5V 6
-#define EC_GND 7
-#define EC_M1A 2
-#define EC_M1B 3
-#define EC_M2A 4
-#define EC_M2B 5
+#define EC_GND 2
+#define EC_M1A 6
+#define EC_M1B 9
+#define EC_M2A 10
+#define EC_M2B 11
 //PD - proximity detector
-#define PD_5V 9
-#define PD_Echo 10
-#define PD_Trig 11
+#define PD_5V 3
+#define PD_Echo 7
+#define PD_Trig 8
 
 SoftwareSerial btSerial(0,1);
 
 void setup() {
   //setup pins
   //EC
-  pinMode(EC_5V, OUTPUT);
   pinMode(EC_GND, OUTPUT);
   pinMode(EC_M1A, OUTPUT);
   pinMode(EC_M1B, OUTPUT);
   pinMode(EC_M2A, OUTPUT);
   pinMode(EC_M2B, OUTPUT);
-  digitalWrite(EC_5V, HIGH);
   digitalWrite(EC_GND, LOW);
   digitalWrite(EC_M1A, LOW);
   digitalWrite(EC_M1B, LOW);
@@ -49,20 +46,20 @@ bool goRight = false;
 void move(char c) {
   switch(c) {
       case 'f':
-        digitalWrite(EC_M1A, LOW);
+        analogWrite(EC_M1A, 0);
         analogWrite(EC_M1B, 150); // 0 - 255
         break;
       case 'b':
-        digitalWrite(EC_M1A, HIGH);
-        analogWrite(EC_M1B, 105);
+        analogWrite(EC_M1A, 150);
+        analogWrite(EC_M1B, 0);
         break;
       case 'l':
-        digitalWrite(EC_M2A, HIGH);
-        digitalWrite(EC_M2B, LOW);
+        analogWrite(EC_M2A, 150);
+        analogWrite(EC_M2B, 0);
         break;  
       case 'r':
-        digitalWrite(EC_M2A, LOW);
-        digitalWrite(EC_M2B, HIGH);
+        analogWrite(EC_M2A, 0);
+        analogWrite(EC_M2B, 150);
         break;  
     }
 }
@@ -112,6 +109,7 @@ void loop() {
   digitalWrite(EC_M2B, LOW);
   goRight = goLeft = false;
 //  uncomment to test distance
-//    Serial.println(distance());
+  btSerial.write(distance());
+  Serial.println(distance());
 //    delay(500);
 }

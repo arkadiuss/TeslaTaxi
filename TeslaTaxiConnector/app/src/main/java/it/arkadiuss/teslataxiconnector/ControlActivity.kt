@@ -23,6 +23,9 @@ class ControlActivity : AppCompatActivity() {
     private val connectionText by lazy {
         findViewById<TextView>(R.id.connection_text)
     }
+    private val distanceText by lazy {
+        findViewById<TextView>(R.id.distance_text)
+    }
     private val refreshBtn by lazy {
         findViewById<Button>(R.id.refresh_btn)
     }
@@ -60,6 +63,10 @@ class ControlActivity : AppCompatActivity() {
                 MotionEvent.ACTION_UP -> CarConnectorService.sendTx('s')
             }
             true
+        }
+
+        CarConnectorService.setOnReadListener { distance ->
+            distanceText.text = "Distance: $distance"
         }
     }
 }

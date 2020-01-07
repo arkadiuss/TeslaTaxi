@@ -1,10 +1,6 @@
 package it.arkadiuss.teslataxiconnector
 
-import android.app.Activity
-import android.bluetooth.BluetoothAdapter
-import android.bluetooth.BluetoothDevice
-import android.bluetooth.BluetoothGatt
-import android.bluetooth.BluetoothGattCallback
+import android.bluetooth.*
 import android.content.Context
 import android.util.Log
 import java.util.*
@@ -18,6 +14,7 @@ object CarConnectorService {
     var connected = false
 
     val TAG = "CarConnector"
+    private var readListener: ((String?) -> Unit)? = null
 
     fun connect(context: Context, device: BluetoothDevice) {
         device.connectGatt(context, false, object: BluetoothGattCallback() {
@@ -38,9 +35,22 @@ object CarConnectorService {
                     bluetoothGatt = gatt
                 }
             }
+
+            override fun onCharacteristicRead(
+                gatt: BluetoothGatt?,
+                characteristic: BluetoothGattCharacteristic?,
+                status: Int
+            ) {
+                if(status == BluetoothGatt.GATT_SUCCESS && characteristic?.uuid == RX_UUID) {
+                    readListener?.invoke(characteristic?.getStringValue(0))
+                }
+            }
         })
     }
 
+    fun setOnReadListener(listener: (String?) -> Unit) {
+        this.readListener = listener;
+    }
 
     fun sendTx(a: Char) {
         val tx = bluetoothGatt?.getService(UART_UUID)?.getCharacteristic(TX_UUID)
