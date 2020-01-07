@@ -33,6 +33,12 @@ object CarConnectorService {
             override fun onServicesDiscovered(gatt: BluetoothGatt?, status: Int) {
                 if (status == BluetoothGatt.GATT_SUCCESS) {
                     bluetoothGatt = gatt
+                    val rx = bluetoothGatt?.getService(UART_UUID)?.getCharacteristic(RX_UUID)
+                    for(descriptor in rx!!.descriptors) {
+                        descriptor.value = BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE
+                        bluetoothGatt?.writeDescriptor(descriptor)
+                    }
+                    bluetoothGatt?.setCharacteristicNotification(rx, true)
                 }
             }
 
@@ -41,8 +47,21 @@ object CarConnectorService {
                 characteristic: BluetoothGattCharacteristic?,
                 status: Int
             ) {
-                if(status == BluetoothGatt.GATT_SUCCESS && characteristic?.uuid == RX_UUID) {
-                    readListener?.invoke(characteristic?.getStringValue(0))
+                if(status == BluetoothGatt.GATT_SUCCESS) {
+                    //val test = characteristic?.getStringValue(0)
+                    //Log.d("TEST READ", test)
+//                    readListener?.invoke(characteristic?.value.toString())
+                }
+            }
+
+            override fun onCharacteristicChanged(
+                gatt: BluetoothGatt?,
+                characteristic: BluetoothGattCharacteristic?
+            ) {
+                if(characteristic?.uuid == RX_UUID) {
+                    val test = characteristic?.getStringValue(0)
+                    Log.d("TEST", test)
+                    readListener?.invoke(test)
                 }
             }
         })
@@ -59,4 +78,9 @@ object CarConnectorService {
             bluetoothGatt?.writeCharacteristic(tx)
         }
     }
+
+//    fun readTx() {
+//        val rx = bluetoothGatt?.getService(UART_UUID)?.getCharacteristic(TX_UUID)
+//        bluetoothGatt?.readCharacteristic(rx)
+//    }
 }

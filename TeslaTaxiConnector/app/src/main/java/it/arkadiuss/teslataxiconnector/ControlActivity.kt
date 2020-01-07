@@ -66,7 +66,9 @@ class ControlActivity : AppCompatActivity() {
         }
 
         CarConnectorService.setOnReadListener { distance ->
-            distanceText.text = "Distance: $distance"
+            runOnUiThread {
+                distanceText.setText("Distance: $distance")
+            }
         }
     }
 }
