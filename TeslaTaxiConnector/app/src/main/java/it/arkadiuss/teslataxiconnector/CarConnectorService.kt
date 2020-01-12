@@ -4,6 +4,7 @@ import android.bluetooth.*
 import android.content.Context
 import android.util.Log
 import java.util.*
+import java.util.concurrent.locks.ReentrantLock
 
 object CarConnectorService {
     var UART_UUID = UUID.fromString("0000ffe0-0000-1000-8000-00805f9b34fb")
@@ -47,12 +48,27 @@ object CarConnectorService {
                 characteristic: BluetoothGattCharacteristic?
             ) {
                 if(characteristic?.uuid == RX_UUID) {
-                    val test = characteristic?.getStringValue(0)
+                    Log.d(TAG, "Characteristic changed "+characteristic?.value?.contentToString() + " "+characteristic?.properties)
                     readListener?.invoke(transformResponse(characteristic?.value))
                 }
             }
+
+            override fun onCharacteristicWrite(
+                gatt: BluetoothGatt?,
+                characteristic: BluetoothGattCharacteristic?,
+                status: Int
+            ) {
+
+                Log.d(TAG, "Characteristic written "+characteristic?.value?.contentToString() + " "+characteristic?.properties)
+                lock.lock()
+                condition.signal()
+                lock.unlock()
+            }
         })
     }
+
+    var lock = ReentrantLock()
+    var condition = lock.newCondition()
 
     fun setOnReadListener(listener: (Int?) -> Unit) {
         this.readListener = listener
@@ -64,6 +80,18 @@ object CarConnectorService {
         if(tx != null) {
             tx.value = byteArrayOf(a.toByte())
             bluetoothGatt?.writeCharacteristic(tx)
+        }
+    }
+
+    fun sendTxSynchronously(a: Char) {
+        Log.d(TAG, "Sending $a")
+        val tx = bluetoothGatt?.getService(UART_UUID)?.getCharacteristic(TX_UUID)
+        if(tx != null) {
+            tx.value = byteArrayOf(a.toByte())
+            bluetoothGatt?.writeCharacteristic(tx)
+            lock.lock()
+            condition.await()
+            lock.unlock()
         }
     }
 

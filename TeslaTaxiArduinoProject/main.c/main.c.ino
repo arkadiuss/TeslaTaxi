@@ -10,6 +10,7 @@
 #define PD_5V 3
 #define PD_Echo 7
 #define PD_Trig 8
+#define PD_GND 4
 
 SoftwareSerial btSerial(0,1);
 
@@ -28,9 +29,11 @@ void setup() {
   digitalWrite(EC_M2B, LOW);
   //PD
   pinMode(PD_5V, OUTPUT);
+  pinMode(PD_GND, OUTPUT);
   pinMode(PD_Echo, INPUT);
   pinMode(PD_Trig, OUTPUT);
   digitalWrite(PD_5V, HIGH);
+  digitalWrite(PD_GND, LOW);
   
   //setup communication
   Serial.begin(9600);
@@ -54,21 +57,35 @@ void move(char c) {
         analogWrite(EC_M1B, 0);
         break;
       case 'l':
-        analogWrite(EC_M2A, 150);
-        analogWrite(EC_M2B, 0);
+        digitalWrite(EC_M2A, HIGH);
+        digitalWrite(EC_M2B, LOW);
         break;  
       case 'r':
-        analogWrite(EC_M2A, 0);
-        analogWrite(EC_M2B, 150);
+        digitalWrite(EC_M2A, LOW);
+        digitalWrite(EC_M2B, HIGH);
         break;  
     }
 }
 
-void stop() {
+void stopFrontBack() {
   digitalWrite(EC_M1A, LOW);
   digitalWrite(EC_M1B, LOW);
+  goFront = goBack = false;
+}
+
+void stopLeftRight() {
   digitalWrite(EC_M2A, LOW);
   digitalWrite(EC_M2B, LOW);
+  if(goLeft) {
+    move('r');
+    delay(50);
+  } else if(goRight) {
+    move('l');
+    delay(70);
+  }
+  digitalWrite(EC_M2A, LOW);
+  digitalWrite(EC_M2B, LOW);
+  goRight = goLeft = false;
 }
 
 int distance() {
@@ -92,24 +109,20 @@ void loop() {
     switch (c) {
       case 'f': goFront = true; goBack = false; break;
       case 'b': goBack = true; goFront = false; break;
-      case 'l': goLeft = true; goRight = false; break;
-      case 'r': goRight = true; goLeft = false; break;
-      case 's': goFront = goBack = goLeft = goRight = false; stop(); break;
+      case 'l': goLeft = true; goRight = false; move('l'); break;
+      case 'r': goRight = true; goLeft = false; move('r'); break;
+      case 's': stopFrontBack(); break;
+      case 'w': stopLeftRight(); break;
     }
-  } else {
-    goFront = goLeft = goRight = goBack = false;
   }
 
   if (goFront) move('f');
   if (goBack) move('b');
-  if (goLeft) move('l');
-  if (goRight) move('r');
   delay(100);
   digitalWrite(EC_M2A, LOW);
   digitalWrite(EC_M2B, LOW);
-  goRight = goLeft = false;
 //  uncomment to test distance
-  btSerial.write(distance());
+  btSerial.println(distance());
   Serial.println(distance());
-//    delay(500);
+  delay(100);
 }
