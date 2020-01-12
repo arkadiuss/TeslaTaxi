@@ -39,31 +39,29 @@ class ControlActivity : AppCompatActivity() {
             connectionText.text = CarConnectorService.connected.toString()
         }
 
-        forwardBtn.setOnTouchListener { v: View,
-                                        m: MotionEvent ->
-            when (m.actionMasked) {
-                MotionEvent.ACTION_DOWN -> CarConnectorService.sendTx('f')
-                MotionEvent.ACTION_UP -> CarConnectorService.sendTx('s')
-            }
-            true
-        }
+        forwardBtn.setOnPressing({
+            CarConnectorService.sendTx('f')
+        }, {
+            CarConnectorService.sendTx('s')
+        })
 
-        rightBtn.setOnClickListener {
+        rightBtn.setOnPressing({
             CarConnectorService.sendTx('r')
-        }
+        }, {
+            CarConnectorService.sendTx('w')
+        })
 
-        leftBtn.setOnClickListener {
+        leftBtn.setOnPressing({
             CarConnectorService.sendTx('l')
-        }
+        }, {
+            CarConnectorService.sendTx('w')
+        })
 
-        backwardBtn.setOnTouchListener { v: View,
-                                         m: MotionEvent ->
-            when (m.actionMasked) {
-                MotionEvent.ACTION_DOWN -> CarConnectorService.sendTx('b')
-                MotionEvent.ACTION_UP -> CarConnectorService.sendTx('s')
-            }
-            true
-        }
+        backwardBtn.setOnPressing({
+            CarConnectorService.sendTx('b')
+        }, {
+            CarConnectorService.sendTx('s')
+        })
 
         CarConnectorService.setOnReadListener { distance ->
             runOnUiThread {

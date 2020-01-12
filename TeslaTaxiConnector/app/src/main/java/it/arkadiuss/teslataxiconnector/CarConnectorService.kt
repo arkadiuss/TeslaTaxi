@@ -14,7 +14,7 @@ object CarConnectorService {
     var connected = false
 
     val TAG = "CarConnector"
-    private var readListener: ((String?) -> Unit)? = null
+    private var readListener: ((Int?) -> Unit)? = null
 
     fun connect(context: Context, device: BluetoothDevice) {
         device.connectGatt(context, false, object: BluetoothGattCallback() {
@@ -42,36 +42,24 @@ object CarConnectorService {
                 }
             }
 
-            override fun onCharacteristicRead(
-                gatt: BluetoothGatt?,
-                characteristic: BluetoothGattCharacteristic?,
-                status: Int
-            ) {
-                if(status == BluetoothGatt.GATT_SUCCESS) {
-                    //val test = characteristic?.getStringValue(0)
-                    //Log.d("TEST READ", test)
-//                    readListener?.invoke(characteristic?.value.toString())
-                }
-            }
-
             override fun onCharacteristicChanged(
                 gatt: BluetoothGatt?,
                 characteristic: BluetoothGattCharacteristic?
             ) {
                 if(characteristic?.uuid == RX_UUID) {
                     val test = characteristic?.getStringValue(0)
-                    Log.d("TEST", test)
-                    readListener?.invoke(test)
+                    readListener?.invoke(transformResponse(characteristic?.value))
                 }
             }
         })
     }
 
-    fun setOnReadListener(listener: (String?) -> Unit) {
-        this.readListener = listener;
+    fun setOnReadListener(listener: (Int?) -> Unit) {
+        this.readListener = listener
     }
 
     fun sendTx(a: Char) {
+        Log.d(TAG, "Sending $a")
         val tx = bluetoothGatt?.getService(UART_UUID)?.getCharacteristic(TX_UUID)
         if(tx != null) {
             tx.value = byteArrayOf(a.toByte())
@@ -79,8 +67,14 @@ object CarConnectorService {
         }
     }
 
-//    fun readTx() {
-//        val rx = bluetoothGatt?.getService(UART_UUID)?.getCharacteristic(TX_UUID)
-//        bluetoothGatt?.readCharacteristic(rx)
-//    }
+    fun transformResponse(bytes: ByteArray?): Int? {
+        if(bytes == null) return null
+        var i = 0
+        var r = 0
+        while(i < bytes.size - 1 && !(bytes[i] == 13.toByte() && bytes[i + 1] == 10.toByte())) {
+            r = r*10 + (bytes[i] - 48)
+            i++
+        }
+        return r
+    }
 }

@@ -80,7 +80,16 @@ class CarConnectorActivity : AppCompatActivity() {
 
     private fun deviceSelected(device: BluetoothDevice) {
         CarConnectorService.connect(this, device)
-        val intent = Intent(this, ControlActivity::class.java)
-        startActivity(intent)
+        showDialog {
+            it.setMessage("What do you want to do?")
+            it.setNeutralButton("Manual Control") { _, _ ->
+                val intent = Intent(this, ControlActivity::class.java)
+                startActivity(intent)
+            }
+            it.setPositiveButton("Taxi mode") { _, _ ->
+                val intent = Intent(this, TaxiControlActivity::class.java)
+                startActivity(intent)
+            }
+        }
     }
 }
