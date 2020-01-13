@@ -9,8 +9,8 @@ import androidx.core.text.isDigitsOnly
 import kotlin.math.abs
 
 class TaxiControlActivity : AppCompatActivity() {
-    private val VELOCITY = 0.75 //meters per second
-    private val ANGLE_VELOCITY = 0.75 //meters per second
+    private val VELOCITY = 1 //meters per second
+    private var lastDistance: Array<Int> = Array(3) { 100 }
 
     private val goBtn by lazy {
         findViewById<Button>(R.id.go_btn)
@@ -33,38 +33,57 @@ class TaxiControlActivity : AppCompatActivity() {
                 go(forward, leftRight)
             }
         }
+
+        CarConnectorService.setOnReadListener {
+            Log.d(TaxiControlActivity::class.java.simpleName, "Distance $it")
+            lastDistance[0]=lastDistance[1]
+            lastDistance[1]=lastDistance[2]
+            lastDistance[2]=it ?: 0
+        }
     }
 
     private fun go(forward: Double, leftRight: Double) {
-        Log.d(TaxiControlActivity::class.java.simpleName, "$forward $leftRight")
-        goForward(forward)
-        if(leftRight < 0) turnLeft() else turnRight()
-        goForward(abs(leftRight))
+        if(!goForward(forward)) return
+        if(leftRight != 0.0) {
+            if (leftRight < 0) turnLeft() else turnRight()
+            goForward(abs(leftRight))
+        }
     }
 
-    private fun goForward(meters: Double) {
+    private fun goForward(meters: Double): Boolean {
         CarConnectorService.sendTxSynchronously('f')
-        val timef = (meters / VELOCITY * 1000.0).toLong()
-        Thread.sleep(timef)
+        var timef = (meters / VELOCITY * 1000.0).toLong()
+        while(timef > 0) {
+            Thread.sleep(10)
+            timef -= 10
+            if(lastDistance.all { it < 40 }) {
+                stopEverything()
+                return false
+            }
+        }
         CarConnectorService.sendTxSynchronously('s')
+        return true
     }
 
     private fun turnRight() {
         CarConnectorService.sendTxSynchronously('r')
-//        Thread.sleep(200)
         turn()
     }
 
     private fun turnLeft() {
         CarConnectorService.sendTxSynchronously('l')
-//        Thread.sleep(200)
         turn()
     }
 
     private fun turn() {
         CarConnectorService.sendTxSynchronously('f')
-        val time = (1 / ANGLE_VELOCITY * 1000.0).toLong()
+        val time = (1.85 / VELOCITY * 1000.0).toLong()
         Thread.sleep(time)
+        CarConnectorService.sendTxSynchronously('w')
+        CarConnectorService.sendTxSynchronously('s')
+    }
+
+    private fun stopEverything() {
         CarConnectorService.sendTxSynchronously('w')
         CarConnectorService.sendTxSynchronously('s')
     }

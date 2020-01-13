@@ -59,7 +59,7 @@ object CarConnectorService {
                 status: Int
             ) {
 
-                Log.d(TAG, "Characteristic written "+characteristic?.value?.contentToString() + " "+characteristic?.properties)
+//                Log.d(TAG, "Characteristic written "+characteristic?.value?.contentToString() + " "+characteristic?.properties)
                 lock.lock()
                 condition.signal()
                 lock.unlock()

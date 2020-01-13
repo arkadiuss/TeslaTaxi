@@ -2,6 +2,7 @@ package it.arkadiuss.teslataxiconnector
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.widget.Button
@@ -65,6 +66,7 @@ class ControlActivity : AppCompatActivity() {
 
         CarConnectorService.setOnReadListener { distance ->
             runOnUiThread {
+                Log.d(ControlActivity::class.java.simpleName, "Distance: $distance")
                 distanceText.setText("Distance: $distance")
             }
         }

@@ -50,10 +50,10 @@ void move(char c) {
   switch(c) {
       case 'f':
         analogWrite(EC_M1A, 0);
-        analogWrite(EC_M1B, 150); // 0 - 255
+        analogWrite(EC_M1B, 100); // 0 - 255
         break;
       case 'b':
-        analogWrite(EC_M1A, 150);
+        analogWrite(EC_M1A, 100);
         analogWrite(EC_M1B, 0);
         break;
       case 'l':
@@ -78,10 +78,10 @@ void stopLeftRight() {
   digitalWrite(EC_M2B, LOW);
   if(goLeft) {
     move('r');
-    delay(50);
+    delay(10);
   } else if(goRight) {
     move('l');
-    delay(70);
+    delay(10);
   }
   digitalWrite(EC_M2A, LOW);
   digitalWrite(EC_M2B, LOW);
@@ -105,7 +105,6 @@ void loop() {
 //  uncomment to test car movement over bt
   if(btSerial.available()) { 
     char c = btSerial.read();
-    Serial.println(c);
     switch (c) {
       case 'f': goFront = true; goBack = false; break;
       case 'b': goBack = true; goFront = false; break;
@@ -118,11 +117,10 @@ void loop() {
 
   if (goFront) move('f');
   if (goBack) move('b');
-  delay(100);
+  delay(50);
   digitalWrite(EC_M2A, LOW);
   digitalWrite(EC_M2B, LOW);
 //  uncomment to test distance
   btSerial.println(distance());
   Serial.println(distance());
-  delay(100);
 }

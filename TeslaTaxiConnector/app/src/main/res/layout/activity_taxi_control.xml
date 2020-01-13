@@ -34,7 +34,7 @@
             android:id="@+id/left_right_text"
             android:layout_width="80dp"
             android:layout_height="wrap_content"
-            android:inputType="numberDecimal"
+            android:inputType="numberDecimal|numberSigned"
             android:layout_gravity="center"
             android:layout_margin="16dp"
             android:text="0"/>
