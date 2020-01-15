@@ -120,7 +120,6 @@ void loop() {
   delay(50);
   digitalWrite(EC_M2A, LOW);
   digitalWrite(EC_M2B, LOW);
-//  uncomment to test distance
   btSerial.println(distance());
   Serial.println(distance());
 }
