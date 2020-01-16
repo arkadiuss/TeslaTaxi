@@ -53,14 +53,15 @@ class TaxiControlActivity : AppCompatActivity() {
     private fun goForward(meters: Double): Boolean {
         CarConnectorService.sendTxSynchronously('f')
         var timef = (meters / VELOCITY * 1000.0).toLong()
-        while(timef > 0) {
+        /*while(timef > 0) {
             Thread.sleep(10)
             timef -= 10
             if(lastDistance.all { it < 40 }) {
                 stopEverything()
                 return false
             }
-        }
+        }*/
+        Thread.sleep(timef);
         CarConnectorService.sendTxSynchronously('s')
         return true
     }

@@ -2,9 +2,9 @@
 
 //EC - engine connector
 #define EC_GND 2
-#define EC_M1A 6
-#define EC_M1B 9
-#define EC_M2A 10
+#define EC_M1A 9
+#define EC_M1B 10
+#define EC_M2A 6
 #define EC_M2B 11
 //PD - proximity detector
 #define PD_5V 3
@@ -46,15 +46,33 @@ bool goBack = false;
 bool goLeft = false;
 bool goRight = false;
 
+
+void fastPwmWrite(int pin, int dutyCycle) {
+  if(pin == 9 || pin == 10) {
+    TCCR1A = _BV(COM1A1) | _BV(COM1B1) | _BV(WGM11) | _BV(WGM10);
+    TCCR1B = _BV(CS10);
+    if(pin == 9) {
+      OCR1A = dutyCycle;
+    } else {
+      OCR1B = dutyCycle;
+    }
+  }
+}
+
+// not yet done
+void pwmWrite(int pin, int dutyCycle, int frequency) {
+  
+}
+
 void move(char c) {
   switch(c) {
       case 'f':
-        analogWrite(EC_M1A, 0);
-        analogWrite(EC_M1B, 100); // 0 - 255
+        fastPwmWrite(EC_M1A, 0);
+        fastPwmWrite(EC_M1B, 200); // 0 - 255
         break;
       case 'b':
-        analogWrite(EC_M1A, 100);
-        analogWrite(EC_M1B, 0);
+        fastPwmWrite(EC_M1A, 200);
+        fastPwmWrite(EC_M1B, 0);
         break;
       case 'l':
         digitalWrite(EC_M2A, HIGH);
