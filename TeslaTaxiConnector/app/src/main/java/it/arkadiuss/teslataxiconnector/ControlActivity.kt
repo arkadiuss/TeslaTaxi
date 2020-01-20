@@ -41,27 +41,27 @@ class ControlActivity : AppCompatActivity() {
         }
 
         forwardBtn.setOnPressing({
-            CarConnectorService.sendTx('f')
+            CarConnectorService.sendTx(Move.FORWARD)
         }, {
-            CarConnectorService.sendTx('s')
+            CarConnectorService.sendTx(Move.STOP)
         })
 
         rightBtn.setOnPressing({
-            CarConnectorService.sendTx('r')
+            CarConnectorService.sendTx(Move.RIGHT)
         }, {
-            CarConnectorService.sendTx('w')
+            CarConnectorService.sendTx(Move.STOP_TURN)
         })
 
         leftBtn.setOnPressing({
-            CarConnectorService.sendTx('l')
+            CarConnectorService.sendTx(Move.LEFT)
         }, {
-            CarConnectorService.sendTx('w')
+            CarConnectorService.sendTx(Move.STOP_TURN)
         })
 
         backwardBtn.setOnPressing({
-            CarConnectorService.sendTx('b')
+            CarConnectorService.sendTx(Move.BACKWARD)
         }, {
-            CarConnectorService.sendTx('s')
+            CarConnectorService.sendTx(Move.STOP)
         })
 
         CarConnectorService.setOnReadListener { distance ->

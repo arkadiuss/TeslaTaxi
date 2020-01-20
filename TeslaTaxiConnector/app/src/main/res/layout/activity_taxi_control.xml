@@ -39,6 +39,14 @@
             android:layout_margin="16dp"
             android:text="0"/>
 
+    <CheckBox
+            android:id="@+id/bypass_checkbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="16dp"
+            android:text="Should try to bypass?"/>
+
     <Button
             android:id="@+id/go_btn"
             android:layout_width="wrap_content"
