@@ -84,10 +84,14 @@ object CarConnectorService {
     }
 
     fun sendTxSynchronously(a: Move) {
+        sendTxSynchronously(byteArrayOf(a.character().toByte()))
+    }
+
+    fun sendTxSynchronously(a: ByteArray) {
         Log.d(TAG, "Sending $a")
         val tx = bluetoothGatt?.getService(UART_UUID)?.getCharacteristic(TX_UUID)
         if(tx != null) {
-            tx.value = byteArrayOf(a.character().toByte())
+            tx.value = a
             bluetoothGatt?.writeCharacteristic(tx)
             lock.lock()
             condition.await()

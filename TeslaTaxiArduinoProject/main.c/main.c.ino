@@ -13,6 +13,7 @@
 #define PD_GND 4
 
 SoftwareSerial btSerial(0,1);
+int velocity = 200;
 
 void setup() {
   //setup pins
@@ -68,10 +69,10 @@ void move(char c) {
   switch(c) {
       case 'f':
         fastPwmWrite(EC_M1A, 0);
-        fastPwmWrite(EC_M1B, 200); // 0 - 255
+        fastPwmWrite(EC_M1B, velocity); // 0 - 255
         break;
       case 'b':
-        fastPwmWrite(EC_M1A, 200);
+        fastPwmWrite(EC_M1A, velocity);
         fastPwmWrite(EC_M1B, 0);
         break;
       case 'l':
@@ -106,15 +107,22 @@ void stopLeftRight() {
   goRight = goLeft = false;
 }
 
+int readVelocity() {
+  int v = 0;
+  while(btSerial.available()) {
+    char c = btSerial.read();
+    v = (v*10) + (c - '0');
+  }
+  return v;  
+}
+
 int distance() {
   //init sequence
   digitalWrite(PD_Trig, LOW);
   delayMicroseconds(2);
   digitalWrite(PD_Trig, HIGH);
-  delayMicroseconds(15);  
+  delayMicroseconds(10);  
   digitalWrite(PD_Trig, LOW);
-  //read data
-  digitalWrite(PD_Echo, HIGH); 
   int t = pulseIn(PD_Echo, HIGH);
   return t / 58;
 }
@@ -130,6 +138,11 @@ void loop() {
       case 'r': goRight = true; goLeft = false; move('r'); break;
       case 's': stopFrontBack(); break;
       case 'w': stopLeftRight(); break;
+      case 'v': {
+        int v = readVelocity();
+        velocity = v > 0 && v <=255 ? v : velocity;
+        break; 
+      }
     }
   }
 

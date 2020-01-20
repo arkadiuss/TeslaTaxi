@@ -25,9 +25,34 @@
             android:id="@+id/refresh_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Refresh"
+            android:text="Refresh connection state"
             android:layout_gravity="center"
             android:layout_margin="16dp"/>
+
+    <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center">
+
+        <TextView
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
+                android:text="Velocity:"/>
+
+        <EditText
+                android:id="@+id/velocity_text"
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:inputType="number"/>
+
+        <Button
+                android:id="@+id/set_velocity_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:text="Set"/>
+    </LinearLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"

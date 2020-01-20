@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.widget.Button
+import android.widget.EditText
 import android.widget.TextView
 
 class ControlActivity : AppCompatActivity() {
@@ -30,6 +31,12 @@ class ControlActivity : AppCompatActivity() {
     private val refreshBtn by lazy {
         findViewById<Button>(R.id.refresh_btn)
     }
+    private val velocityText by lazy {
+        findViewById<EditText>(R.id.velocity_text)
+    }
+    private val setVelocityBtn by lazy {
+        findViewById<Button>(R.id.set_velocity_btn)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,6 +45,10 @@ class ControlActivity : AppCompatActivity() {
         connectionText.text = CarConnectorService.connected.toString()
         refreshBtn.setOnClickListener {
             connectionText.text = CarConnectorService.connected.toString()
+        }
+        setVelocityBtn.setOnClickListener {
+            val v = velocityText.text.toString().toInt()
+            CarConnectorService.sendTxSynchronously("v${v}".toByteArray())
         }
 
         forwardBtn.setOnPressing({
